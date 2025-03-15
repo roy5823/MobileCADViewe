@@ -1,0 +1,51 @@
+modules = ["kotlin", "java-11"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Android DWG Viewer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "build"
+
+[[workflows.workflow]]
+name = "Android DWG Viewer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "source ./setup_env.sh && ./gradlew :app:assembleDebug && echo \"Android app built successfully!\""
+
+[[workflows.workflow]]
+name = "build"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "find app -type f | sort"
+
+[deployment]
+run = ["sh", "-c", "source ./setup_env.sh && ./gradlew :app:assembleDebug && echo \"Android app built successfully!\""]
